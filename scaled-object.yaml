@@ -12,14 +12,15 @@ spec:
   cooldownPeriod:   10                              # Optional. Default: 300 seconds
   idleReplicaCount: 0                                # Optional. Must be less than minReplicaCount
   minReplicaCount:  1                                # Optional. Default: 0
-  maxReplicaCount:  5                                # Optional. Default: 100
+  maxReplicaCount:  10                               # Optional. Default: 100
   triggers:
   - type: kafka
+    metricType: Value
     metadata:
       bootstrapServers: my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
       consumerGroup: g1
       topic: keda-topic
-      lagThreshold: '1'
+      lagThreshold: '15'
       offsetResetPolicy: latest
       allowIdleConsumers: "false"
       version: 1.0.0
