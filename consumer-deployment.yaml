@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka-consumer
-  labels:
-    app: kafka-consumer
   namespace: keda-demo
 spec:
   replicas: 1
@@ -17,16 +15,27 @@ spec:
     spec:
       containers:
       - name: kafka-consumer
-        image: serdarkalayci/kafka-consumer:1.8
+        image: strimzi/kafka:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            while true; do
+              /opt/kafka/bin/kafka-console-consumer.sh \
+                --bootstrap-server ${KAFKA_BROKER} \
+                --topic ${KAFKA_TOPIC} \
+                --group ${KAFKA_CONSUMER_GROUP} \
+                --from-beginning;
+              sleep ${SLEEP};
+            done
         env:
-        - name:  "KAFKA_BROKER"
-          value: "my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
-        - name: "KAFKA_TOPIC"
-          value: "keda-topic"
-        - name: "KAFKA_CONSUMER_GROUP"
-          value: "g1"
-        - name: "SLEEP"
-          value: "3"
+          - name: "KAFKA_BROKER"
+            value: "my-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+          - name: "KAFKA_TOPIC"
+            value: "keda-topic"
+          - name: "KAFKA_CONSUMER_GROUP"
+            value: "g1"
+          - name: "SLEEP"
+            value: "3"
         resources:
           requests:
             memory: "64Mi"
